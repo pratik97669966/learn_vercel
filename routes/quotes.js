@@ -5,7 +5,12 @@ const Room = require('../models/room');
 // GET all rooms
 router.get('/', async (req, res) => {
   try {
-    const rooms = await Room.find({});
+    const db = req.app.locals.db;
+    if (!db) {
+      throw new Error('MongoDB connection not established');
+    }
+    const collection = db.collection('rooms');
+    const rooms = await collection.find({}).toArray();
     res.json(rooms);
   } catch (error) {
     console.error('Error fetching rooms:', error);
@@ -16,25 +21,15 @@ router.get('/', async (req, res) => {
 // POST a new room
 router.post('/', async (req, res) => {
   try {
-    const newRoom = new Room(req.body);
-    await newRoom.save();
-    res.json(newRoom);
+    const db = req.app.locals.db;
+    if (!db) {
+      throw new Error('MongoDB connection not established');
+    }
+    const collection = db.collection('rooms');
+    const newRoom = await collection.insertOne(req.body);
+    res.json(newRoom.ops[0]);
   } catch (error) {
     console.error('Error creating room:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// DELETE a room by ID
-router.delete('/:roomId', async (req, res) => {
-  try {
-    const deletedRoom = await Room.findByIdAndDelete(req.params.roomId);
-    if (!deletedRoom) {
-      return res.status(404).json({ error: 'Room not found' });
-    }
-    res.json(deletedRoom);
-  } catch (error) {
-    console.error('Error deleting room:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -42,13 +37,41 @@ router.delete('/:roomId', async (req, res) => {
 // PUT (or PATCH) an update to a room by ID
 router.put('/:roomId', async (req, res) => {
   try {
-    const updatedRoom = await Room.findByIdAndUpdate(req.params.roomId, req.body, { new: true });
-    if (!updatedRoom) {
+    const db = req.app.locals.db;
+    if (!db) {
+      throw new Error('MongoDB connection not established');
+    }
+    const collection = db.collection('rooms');
+    const updatedRoom = await collection.findOneAndUpdate(
+      { _id: ObjectId(req.params.roomId) },
+      { $set: req.body },
+      { returnOriginal: false }
+    );
+    if (!updatedRoom.value) {
       return res.status(404).json({ error: 'Room not found' });
     }
-    res.json(updatedRoom);
+    res.json(updatedRoom.value);
   } catch (error) {
     console.error('Error updating room:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE a room by ID
+router.delete('/:roomId', async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    if (!db) {
+      throw new Error('MongoDB connection not established');
+    }
+    const collection = db.collection('rooms');
+    const deletedRoom = await collection.findOneAndDelete({ _id: ObjectId(req.params.roomId) });
+    if (!deletedRoom.value) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    res.json(deletedRoom.value);
+  } catch (error) {
+    console.error('Error deleting room:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
