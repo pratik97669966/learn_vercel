@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema({
-  roomTitle: String,
+  roomTittle: String,
   roomDescription: String,
   roomId: { type: String, unique: true }, // Enforce uniqueness on roomId field
   host: String,
