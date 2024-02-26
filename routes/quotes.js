@@ -30,19 +30,22 @@ router.post('/', async (req, res) => {
     const existingRoom = await collection.findOne({ roomId: req.body.roomId });
 
     if (existingRoom) {
-      // If a room with the same roomId exists, update it
+      const { roomTittle, roomDescription, host, visibility, language, password, cardColour } = req.body;
+      const updateFields = { roomTittle, roomDescription, host, visibility, language, password, cardColour };
       const updatedRoom = await collection.findOneAndUpdate(
         { roomId: req.body.roomId },
-        { $set: req.body },
+        { $set: updateFields },
         { returnOriginal: false }
-      );
-      // Return the updated room
-      return res.json(await collection.find({}).toArray());
+      ).then(async () => {
+        const rooms = await collection.find({}).toArray();
+        res.json(rooms);
+      });
     } else {
-      // If no room with the same roomId exists, create a new room
-      const newRoom = await collection.insertOne(req.body);
-      // Return the newly created room
-      return res.json(await collection.find({}).toArray());
+      const newRoom = await collection.insertOne(req.body)
+        .then(async () => {
+          const rooms = await collection.find({}).toArray();
+          res.json(rooms);
+        });
     }
   } catch (error) {
     console.error('Error creating or updating room:', error);
@@ -60,12 +63,16 @@ router.put('/', async (req, res) => {
       throw new Error('MongoDB connection not established');
     }
     const collection = db.collection('rooms');
+    const { roomTittle, roomDescription, host, visibility, language, password, cardColour } = req.body;
+    const updateFields = { roomTittle, roomDescription, host, visibility, language, password, cardColour };
     const updatedRoom = await collection.findOneAndUpdate(
       { roomId: req.body.roomId },
-      { $set: req.body },
+      { $set: updateFields },
       { returnOriginal: false }
-    );
-    res.json(await collection.find({}).toArray());
+    ).then(async () => {
+      const rooms = await collection.find({}).toArray();
+      res.json(rooms);
+    });
   } catch (error) {
     console.error('Error updating room:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -82,7 +89,7 @@ router.delete('/:roomId', async (req, res) => {
     const collection = db.collection('rooms');
     const deletedRoom = await collection.findOneAndDelete({ roomId: req.params.roomId });
     if (!deletedRoom) {
-      return res.status(404).json({ error: 'Room not found' });
+      res.status(404).json({ error: 'Room not found' });
     }
     res.json(await collection.find({}).toArray());
   } catch (error) {

@@ -1,17 +1,18 @@
+const { Long } = require('mongodb');
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema({
-  roomTittle: String,
-  roomDescription: String,
-  roomId: { type: String, unique: true }, // Enforce uniqueness on roomId field
-  host: String,
-  visibility: String,
-  language: String,
-  startTime: Date,
-  endTime: Date,
-  password: String,
-  cardColour: String,
-  users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    roomTittle: String,
+    roomDescription: String,
+    roomId: { type: String, unique: true }, // Enforce uniqueness on roomId field
+    host: String,
+    visibility: String,
+    language: String,
+    startTime: Number,
+    endTime: Number,
+    password: String,
+    cardColour: Number,
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 
 const Room = mongoose.model('Room', roomSchema);

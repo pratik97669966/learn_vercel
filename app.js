@@ -17,15 +17,14 @@ client.connect()
     .then(() => {
         console.log('Connected to MongoDB');
         app.locals.db = client.db('test');
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', quotesRouter);
     })
     .catch(err => {
         console.error('Error connecting to MongoDB:', err);
         process.exit(1); // Exit the application if MongoDB connection fails
     });
-
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+    app.use(cookieParser());
+    app.use(express.static(path.join(__dirname, 'public')));
+    app.use('/', quotesRouter);
 module.exports = app;
