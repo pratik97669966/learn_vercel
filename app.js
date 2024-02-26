@@ -16,7 +16,7 @@ const client = new MongoClient(uri);
 client.connect()
     .then(() => {
         console.log('Connected to MongoDB');
-        app.locals.db = client.db('test'); // Specify the database name here app.use(logger('dev'));
+        app.locals.db = client.db('test');
 
     })
     .catch(err => {
