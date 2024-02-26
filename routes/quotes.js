@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     }
     const collection = db.collection('rooms');
     const newRoom = await collection.insertOne(req.body);
-    res.json(newRoom.ops[0]);
+    res.json(await collection.find({}).toArray());
   } catch (error) {
     console.error('Error creating room:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -43,7 +43,7 @@ router.put('/:roomId', async (req, res) => {
     }
     const collection = db.collection('rooms');
     const updatedRoom = await collection.findOneAndUpdate(
-      { _id: ObjectId(req.params.roomId) },
+      { roomId: ObjectId(req.params.roomId) },
       { $set: req.body },
       { returnOriginal: false }
     );
@@ -65,7 +65,7 @@ router.delete('/:roomId', async (req, res) => {
       throw new Error('MongoDB connection not established');
     }
     const collection = db.collection('rooms');
-    const deletedRoom = await collection.findOneAndDelete({ _id: ObjectId(req.params.roomId) });
+    const deletedRoom = await collection.findOneAndDelete({ roomId: ObjectId(req.params.roomId) });
     if (!deletedRoom.value) {
       return res.status(404).json({ error: 'Room not found' });
     }
