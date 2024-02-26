@@ -37,14 +37,12 @@ router.post('/', async (req, res) => {
         { returnOriginal: false }
       );
       // Return the updated room
-      const rooms = await collection.find({}).toArray();
-      return res.json(rooms);
+      return res.json(await collection.find({}).toArray());
     } else {
       // If no room with the same roomId exists, create a new room
       const newRoom = await collection.insertOne(req.body);
       // Return the newly created room
-      const rooms = await collection.find({}).toArray();
-      return res.json(rooms);
+      return res.json(await collection.find({}).toArray());
     }
   } catch (error) {
     console.error('Error creating or updating room:', error);
