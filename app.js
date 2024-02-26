@@ -9,14 +9,14 @@ const quotesRouter = require('./routes/quotes');
 const app = express();
 
 // MongoDB connection URI
-const uri = 'mongodb+srv://root:root@telusko.rb3lafm.mongodb.net/?retryWrites=true&w=majority&appName=telusko';
+const uri = 'mongodb+srv://dreamercloudofficial:dreamercloudofficial@rooms.drpj12s.mongodb.net/?retryWrites=true&w=majority&appName=Rooms';
 
 // Connect to MongoDB and store the connection in app.locals
 const client = new MongoClient(uri);
 client.connect()
     .then(() => {
         console.log('Connected to MongoDB');
-        app.locals.db = client.db('HomeScreen'); // Specify the database name here app.use(logger('dev'));
+        app.locals.db = client.db('Room'); // Specify the database name here app.use(logger('dev'));
 
     })
     .catch(err => {
