@@ -87,11 +87,10 @@ router.delete('/:roomId', async (req, res) => {
       throw new Error('MongoDB connection not established');
     }
     const collection = db.collection('rooms');
-    const deletedRoom = await collection.findOneAndDelete({ roomId: req.params.roomId });
-    if (!deletedRoom) {
-      res.status(404).json({ error: 'Room not found' });
-    }
-    res.json(await collection.find({}).toArray());
+    const deletedRoom = await collection.findOneAndDelete({ roomId: req.params.roomId }).then(async () => {
+      const rooms = await collection.find({}).toArray();
+      res.json(rooms);
+    });
   } catch (error) {
     console.error('Error deleting room:', error);
     res.status(500).json({ error: 'Internal server error' });
