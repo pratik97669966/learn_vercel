@@ -10,7 +10,7 @@ const roomSchema = new mongoose.Schema({
     language: String,
     startTime: Number,
     endTime: Number,
-    password: String,
+    password: Number,
     cardColour: Number,
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
