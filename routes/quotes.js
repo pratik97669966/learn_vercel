@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     const collection = db.collection('rooms');
     const existingRoom = await collection.findOne({ roomId: req.body.roomId });
     if (existingRoom) {
-      const { roomTitle, roomDescription, host, visibility, language, startTime, password, cardColour, endTime } = req.body;
+      const { roomTittle, roomDescription, host, visibility, language, startTime, password, cardColour, endTime } = req.body;
       const currentTime = Date.now();
       let calculatedEndTime;
       switch (endTime) {
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
       }
 
       const updateFields = {
-        roomTitle,
+        roomTittle,
         roomDescription,
         host,
         visibility,
@@ -67,20 +67,21 @@ router.post('/', async (req, res) => {
     }
     else {
       const addBody = req.body;
-      const startTime = Date.now();
-      addBody.startTime = startTime;
+      const startTimefinal = Date.now();
+      addBody.startTime = startTimefinal;
       switch (addBody.endTime) {
         case 1:
-          addBody.endTime = startTime + (1 * 60 * 60 * 1000); // Add 1 hour
+          addBody.endTime = startTimefinal + (1 * 60 * 60 * 1000); // Add 1 hour
           break;
         case 2:
-          addBody.endTime = startTime + (2 * 60 * 60 * 1000); // Add 2 hours
+          addBody.endTime = startTimefinal + (2 * 60 * 60 * 1000); // Add 2 hours
           break;
         case 3:
-          addBody.endTime = startTime + (3 * 60 * 60 * 1000); // Add 3 hours
+          addBody.endTime = startTimefinal + (3 * 60 * 60 * 1000); // Add 3 hours
           break;
         default:
-          addBody.endTime = startTime + (1 * 60 * 60 * 1000); // Default to 1 hour
+          addBody.endTime = startTimefinal + (1 * 60 * 60 * 1000); // Default to 1 hour
+          break;
       }
       await collection.insertOne(addBody)
         .then(async () => {
@@ -105,7 +106,7 @@ router.put('/', async (req, res) => {
       console.error('MongoDB connection not established');
     }
     const collection = db.collection('rooms');
-    const { roomTitle, roomDescription, host, visibility, language, password, cardColour, endTime } = req.body;
+    const { roomTittle, roomDescription, host, visibility, language, password, cardColour, endTime } = req.body;
     const startTime = Date.now();
     let calculatedEndTime;
     switch (endTime) {
@@ -123,7 +124,7 @@ router.put('/', async (req, res) => {
     }
 
     const updateFields = {
-      roomTitle,
+      roomTittle,
       roomDescription,
       host,
       visibility,
