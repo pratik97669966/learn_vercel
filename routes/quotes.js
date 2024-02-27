@@ -2,6 +2,21 @@ const express = require('express');
 const router = express.Router();
 const Room = require('../models/room');
 
+async function getActiveRooms(db) {
+  try {
+    if (!db) {
+      console.error('MongoDB connection not established');
+      return [];
+    }
+    
+    const collection = db.collection('rooms');
+    const currentTime = Date.now();
+    const activeRooms = await collection.find({ endTime: { $gte: currentTime } }).toArray();
+    return activeRooms;
+  } catch (error) {
+    console.error('Error fetching active rooms:', error);
+  }
+}
 // GET all rooms
 router.get('/', async (req, res) => {
   try {
@@ -9,9 +24,8 @@ router.get('/', async (req, res) => {
     if (!db) {
       console.error('MongoDB connection not established');
     }
-    const collection = db.collection('rooms');
-    const rooms = await collection.find({}).toArray();
-    res.json(rooms);
+    const activeRooms = await getActiveRooms(db);
+    res.json(activeRooms);
   } catch (error) {
     console.error('Error fetching rooms:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -61,8 +75,8 @@ router.post('/', async (req, res) => {
         { $set: updateFields },
         { returnOriginal: false }
       ).then(async () => {
-        const rooms = await collection.find({}).toArray();
-        res.json(rooms);
+        const activeRooms = await getActiveRooms(db);
+        res.json(activeRooms);
       });
     }
     else {
@@ -85,8 +99,8 @@ router.post('/', async (req, res) => {
       }
       await collection.insertOne(addBody)
         .then(async () => {
-          const rooms = await collection.find({}).toArray();
-          res.json(rooms);
+          const activeRooms = await getActiveRooms(db);
+          res.json(activeRooms);
         });
     }
 
@@ -140,8 +154,8 @@ router.put('/', async (req, res) => {
       { $set: updateFields },
       { returnOriginal: false }
     ).then(async () => {
-      const rooms = await collection.find({}).toArray();
-      res.json(rooms);
+      const activeRooms = await getActiveRooms(db);
+      res.json(activeRooms);
     });
   } catch (error) {
     console.error('Error updating room:', error);
@@ -157,9 +171,9 @@ router.delete('/:roomId', async (req, res) => {
       console.error('MongoDB connection not established');
     }
     const collection = db.collection('rooms');
-    const deletedRoom = await collection.findOneAndDelete({ roomId: req.params.roomId }).then(async () => {
-      const rooms = await collection.find({}).toArray();
-      res.json(rooms);
+     await collection.findOneAndDelete({ roomId: req.params.roomId }).then(async () => {
+      const activeRooms = await getActiveRooms(db);
+      res.json(activeRooms);
     });
   } catch (error) {
     console.error('Error deleting room:', error);
