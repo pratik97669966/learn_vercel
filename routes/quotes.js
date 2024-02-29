@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
     if (!db) {
       console.error('MongoDB connection not established');
     }
+    const collection = db.collection('rooms');
     const activeRooms = await getActiveRooms(db);
     res.json(activeRooms);
   } catch (error) {
