@@ -47,16 +47,16 @@ router.post('/', async (req, res) => {
       let calculatedEndTime;
       switch (endTime) {
         case 1:
-          calculatedEndTime = currentTime + (1 * 60 * 60 * 1000); // Add 1 hour
+          calculatedEndTime = currentTime + (4 * 60 * 60 * 1000); // Add 1 hour
           break;
         case 2:
-          calculatedEndTime = currentTime + (2 * 60 * 60 * 1000); // Add 2 hours
+          calculatedEndTime = currentTime + (4 * 60 * 60 * 1000); // Add 2 hours
           break;
         case 3:
-          calculatedEndTime = currentTime + (3 * 60 * 60 * 1000); // Add 3 hours
+          calculatedEndTime = currentTime + (4 * 60 * 60 * 1000); // Add 3 hours
           break;
         default:
-          calculatedEndTime = currentTime + (1 * 60 * 60 * 1000); // Default to 1 hour
+          calculatedEndTime = currentTime + (4 * 60 * 60 * 1000); // Default to 1 hour
       }
 
       const updateFields = {
@@ -86,16 +86,16 @@ router.post('/', async (req, res) => {
       addBody.startTime = startTimefinal;
       switch (addBody.endTime) {
         case 1:
-          addBody.endTime = startTimefinal + (1 * 60 * 60 * 1000); // Add 1 hour
+          addBody.endTime = startTimefinal + (4 * 60 * 60 * 1000); // Add 1 hour
           break;
         case 2:
-          addBody.endTime = startTimefinal + (2 * 60 * 60 * 1000); // Add 2 hours
+          addBody.endTime = startTimefinal + (4 * 60 * 60 * 1000); // Add 2 hours
           break;
         case 3:
-          addBody.endTime = startTimefinal + (3 * 60 * 60 * 1000); // Add 3 hours
+          addBody.endTime = startTimefinal + (4 * 60 * 60 * 1000); // Add 3 hours
           break;
         default:
-          addBody.endTime = startTimefinal + (1 * 60 * 60 * 1000); // Default to 1 hour
+          addBody.endTime = startTimefinal + (4 * 60 * 60 * 1000); // Default to 1 hour
           break;
       }
       await collection.insertOne(addBody)
@@ -126,16 +126,16 @@ router.put('/', async (req, res) => {
     let calculatedEndTime;
     switch (endTime) {
       case 1:
-        calculatedEndTime = startTime + (1 * 60 * 60 * 1000); // Add 1 hour
+        calculatedEndTime = startTime + (4 * 60 * 60 * 1000); // Add 1 hour
         break;
       case 2:
-        calculatedEndTime = startTime + (2 * 60 * 60 * 1000); // Add 2 hours
+        calculatedEndTime = startTime + (4 * 60 * 60 * 1000); // Add 2 hours
         break;
       case 3:
-        calculatedEndTime = startTime + (3 * 60 * 60 * 1000); // Add 3 hours
+        calculatedEndTime = startTime + (4 * 60 * 60 * 1000); // Add 3 hours
         break;
       default:
-        calculatedEndTime = startTime + (1 * 60 * 60 * 1000); // Add 1 hour
+        calculatedEndTime = startTime + (4 * 60 * 60 * 1000); // Add 1 hour
     }
 
     const updateFields = {
