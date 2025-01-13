@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/room');
+const { ObjectId } = require('mongodb');
+//const databaseName='Ashish';
+const databaseName='rooms';
 
 async function getActiveRooms(db) {
   try {
@@ -9,7 +12,7 @@ async function getActiveRooms(db) {
       return [];
     }
     
-    const collection = db.collection('rooms');
+    const collection = db.collection(databaseName);
     const currentTime = Date.now();
     const activeRooms = await collection.find({ endTime: { $gte: currentTime } }).toArray();
     return activeRooms;
@@ -24,7 +27,7 @@ router.get('/', async (req, res) => {
     if (!db) {
       console.error('MongoDB connection not established');
     }
-    const collection = db.collection('rooms');
+    const collection = db.collection(databaseName);
     const activeRooms = await getActiveRooms(db);
     res.json(activeRooms);
   } catch (error) {
@@ -39,7 +42,7 @@ router.post('/', async (req, res) => {
     if (!db) {
       console.error('MongoDB connection not established');
     }
-    const collection = db.collection('rooms');
+    const collection = db.collection(databaseName);
     const existingRoom = await collection.findOne({ roomId: req.body.roomId });
     if (existingRoom) {
       const { roomTittle, roomDescription, host, visibility, language, startTime, password, cardColour, endTime } = req.body;
@@ -120,7 +123,7 @@ router.put('/', async (req, res) => {
     if (!db) {
       console.error('MongoDB connection not established');
     }
-    const collection = db.collection('rooms');
+    const collection = db.collection(databaseName);
     const { roomTittle, roomDescription, host, visibility, language, password, cardColour, endTime } = req.body;
     const startTime = Date.now();
     let calculatedEndTime;
@@ -164,22 +167,31 @@ router.put('/', async (req, res) => {
   }
 });
 
-// DELETE a room by ID
+
+
+
+
+// DELETE a room by roomId or _id
 router.delete('/:roomId', async (req, res) => {
   try {
     const db = req.app.locals.db;
-    if (!db) {
-      console.error('MongoDB connection not established');
-    }
-    const collection = db.collection('rooms');
-     await collection.findOneAndDelete({ roomId: req.params.roomId }).then(async () => {
-      const activeRooms = await getActiveRooms(db);
-      res.json(activeRooms);
-    });
-  } catch (error) {
-    console.error('Error deleting room:', error);
+    if (!db) return res.status(500).json({ error: 'Database connection error' });
+
+    const { roomId } = req.params;
+    const collection = db.collection(databaseName);
+
+    const query = roomId.match(/^[0-9a-fA-F]{24}$/)
+      ? { _id: new (require('mongodb')).ObjectId(roomId) }
+      : { roomId };
+
+    await collection.findOneAndDelete(query);
+
+    res.json(await getActiveRooms(db));
+  } catch {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 
 module.exports = router;
